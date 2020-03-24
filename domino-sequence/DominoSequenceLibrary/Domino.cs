@@ -4,49 +4,69 @@ using System.Linq;
 
 namespace DominoSequenceLibrary
 {
-    public class Tile
-    {
-        public Guid Id { get; private set; }
-        public int Left { get; private set; }
-        public int Right { get; private set; }
-
-        public Tile Next { get; internal set; }
-
-        public Tile(int left, int right) : this(Guid.NewGuid(), left, right) { }
-
-        public Tile(Guid id, int left, int right)
-        {
-            Id = id;
-            Left = left;
-            Right = right;
-        }
-
-        public override string ToString()
-        {
-            return $"{Left}-{Right}";
-        }
-    }
-
     public class Domino
     {
-        //public IEnumerable<Tile> CalculateSequence(string input)
-        //{
-        //    var tiles = Deserialize(input);
+        #region Sequence
 
-        //    foreach (var item in tiles)
-        //    {
-        //        var others = tiles
-        //            .Where(t => t.Id != item.Id)
-        //            .ToList();
+        public List<Tile> GetSequences(string input)
+        {
+            var tiles = Deserialize(input);
 
-        //        yield return item;
+            var result = new List<Tile>();
 
-        //        foreach (var tile in CalculateSequence(item, others))
-        //        {
-        //            yield return tile;
-        //        }
-        //    }
-        //}
+            foreach (var tile in tiles)
+            {
+                var sequence = GetNextSequence(tile, tiles);
+                if (sequence.Any())
+                {
+                    foreach (var item in sequence)
+                    {
+                        var clone = (Tile)tile.Clone();
+                        clone.SetNext(item);
+                        result.Add(clone);
+                    }
+                }
+                else
+                {
+                    result.Add(tile);
+                }
+            }
+
+            return result;
+        }
+
+        private List<Tile> GetNextSequence(Tile tile__, List<Tile> tiles)
+        {
+            var other__ = tiles.Where(x => x.Id != tile__.Id).ToList();
+
+            var next = other__.Where(x => x.Left == tile__.Right).ToList();
+
+            var result = new List<Tile>();
+
+            foreach (var tile in next)
+            {
+                var sequence = GetNextSequence(tile, other__);
+                if (sequence.Any())
+                {
+                    foreach (var item in sequence)
+                    {
+                        var clone = (Tile)tile.Clone();
+                        clone.SetNext(item);
+                        result.Add(clone);
+                    }
+                }
+                else
+                {
+                    result.Add(tile);
+                }
+            }
+
+            return result;
+        }
+
+        #endregion
+
+        #region Depth
 
         public int GetMaxDepth(string input)
         {
@@ -86,8 +106,15 @@ namespace DominoSequenceLibrary
             return currentDepth;
         }
 
+        #endregion
+
         private List<Tile> Deserialize(string input)
         {
+            if (String.IsNullOrEmpty(input))
+            {
+                return new List<Tile>();
+            }
+
             return input
                 .Split(',')
                 .Select(x =>
