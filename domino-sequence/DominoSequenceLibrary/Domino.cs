@@ -52,51 +52,38 @@ namespace DominoSequenceLibrary
         {
             var tiles = Deserialize(input);
 
-            var maxRoute = 0;
+            var maxDepth = 0;
 
             foreach (var item in tiles)
             {
-                var others = tiles
-                    .Where(t => t.Id != item.Id)
-                    .ToList();
+                var depth = GetDepth(1, item, tiles);
 
-                var route = GetDepth(1, item, others);
-
-                if (route > maxRoute)
+                if (depth > maxDepth)
                 {
-                    maxRoute = route;
+                    maxDepth = depth;
                 }
             }
 
-            return maxRoute;
+            return maxDepth;
         }
 
-        private int GetDepth(int depth, Tile tile, List<Tile> tiles)
+        private int GetDepth(int currentDepth, Tile tile, List<Tile> allTiles)
         {
-            if (!tiles.Any())
-            {
-                return depth;
-            }
+            var otherTiles = allTiles.Where(x => x.Id != tile.Id).ToList();
 
-            var maxRoute = depth;
-
-            var tilesToConnect = tiles.Where(t => t.Left == tile.Right).ToList();
+            var tilesToConnect = otherTiles.Where(t => t.Left == tile.Right).ToList();
 
             foreach (var item in tilesToConnect)
             {
-                var others = tiles
-                    .Where(t => t.Id != item.Id)
-                    .ToList();
+                var depth = GetDepth(currentDepth + 1, item, otherTiles);
 
-                var route = GetDepth(depth + 1, item, others);
-
-                if (route > maxRoute)
+                if (depth > currentDepth)
                 {
-                    maxRoute = route;
+                    currentDepth = depth;
                 }
             }
 
-            return maxRoute;
+            return currentDepth;
         }
 
         private List<Tile> Deserialize(string input)
