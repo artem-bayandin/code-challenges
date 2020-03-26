@@ -2,7 +2,7 @@
 
 ## domino-sequence
 
-* finds the longest path having provided dominos
+finds the longest path having provided dominos
 
 ## fizz-buzz
 
