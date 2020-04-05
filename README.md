@@ -14,7 +14,7 @@ Some algorithms from 'fast-coding' tasks (codility, test projects, etc)
 ## plane-seats-allocator
 
 - how many families might be set in a plane with some allocated seats
-- lib accepts rows 1..9, seat letters A..Z
+- lib accepts rows 1..99, seat letters A..Z
 - lib accepts any sequence of letters in a row (standard sequence 'A', 'B', 'C', 'D' and non-standard like 'G', 'O', 'D', 'P' are allowed)
 - lib accepts any sequence that might be treated as a 'good one' (like 'b', 'c', 'd', 'e' for family of 4; and 'f', 'g', 'h' for family of 3)
 
