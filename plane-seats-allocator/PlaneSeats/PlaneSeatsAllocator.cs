@@ -9,47 +9,45 @@ namespace PlaneSeats
     {
         public int NumberOfRows { get; }
         public string AllocatedSeatsMatrix { get; }
+        public List<string> SeatLetters { get; }
 
         public Plane Plane { get; } = new Plane();
 
-        public PlaneSeatsAllocator(int numberOfRows, string allocatedSeatsMatrix)
+        public PlaneSeatsAllocator(int numberOfRows
+            , string allocatedSeatsMatrix
+            , List<string> seatLetters
+            )
         {
             NumberOfRows = numberOfRows;
             AllocatedSeatsMatrix = allocatedSeatsMatrix.ToUpper();
+            SeatLetters = seatLetters ?? new List<string>();
 
             ConvertInputIntoRowsWithAllocatedSeats();
         }
 
-        public int CountFamiliesOf4()
+        public int CountPossibleAllocations(List<AllocationValue> possibleAllocationsWithValue)
         {
+            if (possibleAllocationsWithValue == null || possibleAllocationsWithValue.Count == 0) throw new ApplicationException("Collection of values should not be null or empty.");
+
             // this validation added to omit unnecessary iterations if we have 0 seats allocated
             if (String.IsNullOrEmpty(AllocatedSeatsMatrix))
             {
-                return NumberOfRows * 2;
+                return NumberOfRows * possibleAllocationsWithValue.Max(v => v.Value);
             }
 
             int counter = 0;
 
-            var first = new List<string> { "B", "C", "D", "E" };
-            var second = new List<string> { "D", "E", "F", "G" };
-            var third = new List<string> { "F", "G", "H", "I" };
-
             foreach (var row in Plane.Rows)
             {
-                var seats = row.AllocatedSeats.Select(s => s.Letter);
+                var seats = row.AllocatedSeats.Select(s => s.Letter).ToList();
 
-                if (first.All(x => !seats.Contains(x)) && third.All(x => !seats.Contains(x)))
+                foreach (var possibleAllocation in possibleAllocationsWithValue.OrderByDescending(x => x.Value))
                 {
-                    counter += 2;
-                    continue;
-                }
-
-                if (first.All(x => !seats.Contains(x))
-                    || second.All(x => !seats.Contains(x))
-                    || third.All(x => !seats.Contains(x)))
-                {
-                    counter += 1;
-                    continue;
+                    if (possibleAllocation.Letters.All(x => !seats.Contains(x)))
+                    {
+                        counter += possibleAllocation.Value;
+                        break;
+                    }
                 }
             }
 
@@ -79,6 +77,7 @@ namespace PlaneSeats
                 }
 
                 if (row > NumberOfRows) throw new ApplicationException("Row number cannot be greater than total number of rows.");
+                if (!SeatLetters.Contains(letter)) throw new ApplicationException("Allocated seat letter should be in list of available letters.");
 
                 Plane.AddAllocatedSeat(row, letter);
             }

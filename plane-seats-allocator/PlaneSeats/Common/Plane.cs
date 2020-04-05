@@ -5,14 +5,14 @@ namespace PlaneSeats.Common
 {
     public class Plane
     {
-        public List<PlaneRow> Rows { get; } = new List<PlaneRow>();
+        public List<PlaneRow> Rows { get; private set; } = new List<PlaneRow>();
 
         public PlaneRow AddRow(int rowNumber)
         {
             var row = Rows.FirstOrDefault(r => r.Number == rowNumber);
             if (row == null)
             {
-                row = new PlaneRow(rowNumber);
+                row = PlaneRow.Create(rowNumber);
                 Rows.Add(row);
             }
             return row;
