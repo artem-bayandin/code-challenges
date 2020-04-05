@@ -6,20 +6,27 @@ namespace PlaneSeats.Common
 {
     public class PlaneRow
     {
-        public int Number { get; }
-        public List<PlaneSeat> AllocatedSeats { get; } = new List<PlaneSeat>();
+        public int Number { get; private set; }
+        public List<PlaneSeat> AllocatedSeats { get; private set; }
 
-        public PlaneRow(int number)
+        private PlaneRow() { }
+
+        public static PlaneRow Create(int number)
         {
             if (number < 0) throw new ApplicationException("Row number must be greater than 0.");
-            Number = number;
+
+            return new PlaneRow
+            {
+                Number = number,
+                AllocatedSeats = new List<PlaneSeat>()
+            };
         }
 
         public void AddAllocatedSeat(string letter)
         {
             if (!AllocatedSeats.Any(seat => seat.Letter == letter))
             {
-                AllocatedSeats.Add(new PlaneSeat(Number, letter));
+                AllocatedSeats.Add(PlaneSeat.Create(Number, letter));
             }
         }
     }
