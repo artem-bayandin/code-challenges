@@ -13,7 +13,7 @@ namespace PlaneSeats.Common
 
         public static PlaneRow Create(int number)
         {
-            if (number < 0) throw new ApplicationException("Row number must be greater than 0.");
+            if (number < 1 || number > 99) throw new ApplicationException("Row is allowed in a range 1..99.");
 
             return new PlaneRow
             {

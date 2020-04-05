@@ -63,6 +63,8 @@ namespace PlaneSeats
 
             foreach (var taken in AllocatedSeatsMatrix.Split(' '))
             {
+                if (taken.Length > 3) throw new ArgumentException("Name of seat might contain 1 or 2 digits of row number and 1 char for seat letter.");
+
                 int row;
                 string letter;
                 if (taken.Length == 2)
@@ -76,8 +78,8 @@ namespace PlaneSeats
                     letter = taken.Substring(2, 1);
                 }
 
-                if (row > NumberOfRows) throw new ApplicationException("Row number cannot be greater than total number of rows.");
-                if (!SeatLetters.Contains(letter)) throw new ApplicationException("Allocated seat letter should be in list of available letters.");
+                if (row > NumberOfRows) throw new ArgumentException("Row number cannot be greater than total number of rows.");
+                if (!SeatLetters.Contains(letter)) throw new ArgumentException("Allocated seat letter should be in list of available letters.");
 
                 Plane.AddAllocatedSeat(row, letter);
             }
